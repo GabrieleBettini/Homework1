@@ -8,10 +8,10 @@ target_link_libraries(catch2Test)
 
 # Including headers
 target_include_directories(catch2Test PRIVATE
-        ../libraries) # Including this allows to simply write #include "funcs.h"
+        ../src) # Including this allows to simply write #include "funcs.h"
 
 # Including sources
 target_sources(catch2Test PRIVATE
-        ../libraries/mycomponent.cpp)
+        ../src/mycomponent.cpp)
 
 #target_compile_options(catch2Test PRIVATE -Wa,-mbig-obj) # Solves assembler error of file too big
