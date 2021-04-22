@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(structure)
+project(manovella)
 
 # Standard set to 17 to have mandatory RVO
 set(CMAKE_CXX_STANDARD 17)
@@ -8,9 +8,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 # EXECUTABLE SECTION
 add_executable(manovella main.cpp)
-target_include_directories(manovella PRIVATE libraries)
+target_include_directories(manovella PUBLIC libraries)
 # Class A is not a library: its source file needs to be included in the target sources
-target_sources(manovella PRIVATE src/manovella.cpp)
+target_sources(manovella PUBLIC src/manovella.cpp)
 target_link_libraries(manovella)
 
 # TESTS SECTION
