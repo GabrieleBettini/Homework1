@@ -7,11 +7,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 
 # EXECUTABLE SECTION
-add_executable(mainEntry main.cpp)
-target_include_directories(mainEntry PRIVATE src)
+add_executable(manovella main.cpp)
+target_include_directories(manovella PRIVATE libraries)
 # Class A is not a library: its source file needs to be included in the target sources
-target_sources(mainEntry PRIVATE src/mycomponent.cpp)
-target_link_libraries(mainEntry)
+target_sources(manovella PRIVATE src/manovella.cpp)
+target_link_libraries(manovella)
 
 # TESTS SECTION
 # Basically makes CMake read the CMakeLists.txt file contained in tests
