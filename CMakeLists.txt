@@ -1,17 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(manovella)
+project(sistemaAstePerno)
 
 # Standard set to 17 to have mandatory RVO
 set(CMAKE_CXX_STANDARD 17)
 
 
 # EXECUTABLE SECTION
-add_executable(manovella main.cpp)
-target_include_directories(manovella PUBLIC libraries)
+add_executable(sistemaAstePerno main.cpp)
+target_include_directories(sistemaAstePerno PUBLIC libraries)
 # Class A is not a library: its source file needs to be included in the target sources
-target_sources(manovella PUBLIC src/manovella.cpp)
-target_link_libraries(manovella)
+target_sources(sistemaAstePerno PUBLIC src/sistemaAstePerno.cpp)
+target_link_libraries(sistemaAstePerno)
 
 # TESTS SECTION
 # Basically makes CMake read the CMakeLists.txt file contained in tests

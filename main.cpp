@@ -1,9 +1,9 @@
 #include <iostream>
-#include "manovella.h"
+#include "sistemaAstePerno.h"
 
 using namespace std;
 
-void printDevice(device *dispositivo)
+void SAP_printDevice(device *dispositivo)
 {
     cout << "Angolo base: " << dispositivo->angoloBase << endl;
     cout << "Angolo giunto: " << dispositivo->angoloGiunto << endl;
@@ -18,10 +18,13 @@ int main()
 {
 
     //creazione del dispositivo con misure assegnate
-    device *dispositivo = device_init(20, 5, 45, 90);
+    device *dispositivo = SAP_device_init(300, 20, 60, 90);
 
-    printDevice(dispositivo);
-    motoAngolo (30, -20, dispositivo);
-    printDevice(dispositivo);
+    SAP_printDevice(dispositivo);
+    /* SAP_motoAngolo(30, -20, dispositivo);*/
+    SAP_printDevice(dispositivo);
+    SAP_drawDevice(dispositivo);
+
     return 0;
+
 }
