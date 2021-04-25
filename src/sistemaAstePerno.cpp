@@ -6,8 +6,6 @@
 #include <sstream>
 #include <math.h>
 
-#define PI 3.14159
-
 using namespace std;
 
 // inizializzazione di un asta
@@ -24,9 +22,9 @@ asta *SAP_asta_init(double lunghezza, double altezza)
 
     brc->lunghezza = lunghezza;
     brc->altezza = altezza;
-    brc->x = altezza/2;
-    brc->y = lunghezza-altezza;
-    
+    brc->x = altezza / 2;
+    brc->y = lunghezza - altezza;
+
     return brc;
 }
 
@@ -43,7 +41,7 @@ device *SAP_device_init(double diml, double dimh, float angBase, float angGiunto
         return NULL;
     }
 
-    if (angBase > 90 || angBase < 45)
+    if ((angBase > 90 || angBase < 45) && false)
     {
         cout << "Errore: l'angolo base deve essere compreso tra 45 e 90 gradi" << endl;
         return NULL;
@@ -83,38 +81,78 @@ void SAP_motoAngolo(float angBase, float angGiunto, device *puntatoreDispositivo
     puntatoreDispositivo->angoloGiunto = sommaAngGiunto;
 }
 
-void SAP_drawDevice(device *dispositivo) 
+//salvataggio SVG in un file
+void SAP_salvaSVG(string SVG)
 {
+
+    ofstream sistemaAstePerno("sistemaAstePerno.svg");
+    if (!sistemaAstePerno)
+    {
+        cout << "Errore: non è stato possibile aprire il file corretto.";
+        return;
+    }
+
+    sistemaAstePerno << SVG;
+    sistemaAstePerno.close();
+}
+
+void SAP_drawDevice(device *dispositivo)
+{
+    double canvasW = 800;
+    double canvasH = 600;
     string SVG = "";
-    SVG += "<svg width=\"800\" height=\"600\" xmlns=\"http://www.w3.org/2000/svg\">\n";
+    SVG += "<svg width=\"" + to_string(canvasW) + "\" height=\"" + to_string(canvasH) + "\" xmlns=\"http://www.w3.org/2000/svg\">\n";
     SVG += "<g>\n<title>Sistema 2 aste con perno</title>\n";
-    double angBase = 90-dispositivo->angoloBase;
+    double angBase = 90 - dispositivo->angoloBase;
     double angGiunto = -dispositivo->angoloGiunto;
 
     double altezza = dispositivo->astaBase.altezza;
     double lunghezza = dispositivo->astaBase.lunghezza;
-    double x_base = altezza/2;
+    double x_base = altezza / 2;
     double y_base = lunghezza - x_base;
 
-    double centroSVGx = 400;
-    double centroSVGy = 300;
-    double x_giunto = centroSVGx + (cos(angBase*PI/180)*dispositivo->astaGiunto.lunghezza)-dispositivo->astaGiunto.altezza;
-    double y_giunto = abs((sin(angBase*PI/180)*dispositivo->astaGiunto.lunghezza)-dispositivo->astaGiunto.altezza);
+    double centroSVGx = canvasW / 2;
+    double centroSVGy = canvasH / 2;
+    double x_giunto = centroSVGx + (sin(angBase * M_PI / 180) * dispositivo->astaGiunto.lunghezza) - sin(angBase * M_PI / 180) * dispositivo->astaGiunto.altezza;
+    double y_giunto = canvasH - ((centroSVGy + (cos(angBase * M_PI / 180) * dispositivo->astaGiunto.lunghezza) - dispositivo->astaBase.lunghezza)) - (sin(angBase * M_PI / 180) * dispositivo->astaGiunto.altezza / (1 + cos(angBase * M_PI / 180)));
 
-    SVG += "<rect transform=\"translate("+to_string(centroSVGx)+","+to_string(centroSVGy)+")rotate("+ to_string(angBase)+","+ to_string(x_base)+",";
-    SVG += to_string(y_base)+")\" id=\"svg_1\" height=\""+to_string(lunghezza)+"\" width=\""+to_string(altezza);
-    SVG += "\" y=\"0\" x=\"0\" stroke=\"#000\" fill=\"#fff\"/>\n";
-    SVG += "<rect transform=\"translate("+to_string(x_giunto)+","+to_string(y_giunto)+")rotate("+ to_string(angGiunto)+","+ to_string(x_base)+",";
-    SVG += to_string(y_base)+")\" id=\"svg_2\" height=\""+to_string(lunghezza)+"\" width=\""+to_string(altezza);
-    SVG += "\" y=\"0\" x=\"0\" stroke=\"#000\" fill=\"#fff\"/>\n";
-    
+    SVG += "<rect transform=\"translate(" + to_string(centroSVGx) + "," + to_string(centroSVGy) + ")rotate(" + to_string(angBase) + "," + to_string(x_base) + ",";
+    SVG += to_string(y_base) + ")\" id=\"svg_1\" height=\"" + to_string(lunghezza) + "\" width=\"" + to_string(altezza);
+    SVG += "\" y=\"0\" x=\"0\" stroke=\"#000\" fill=\"red\"/>\n";
+    SVG += "<rect transform=\"translate(" + to_string(x_giunto) + "," + to_string(y_giunto) + ")rotate(" + to_string(angGiunto) + "," + to_string(x_base) + ",";
+    SVG += to_string(x_base) + ")\" id=\"svg_2\" height=\"" + to_string(lunghezza) + "\" width=\"" + to_string(altezza);
+    SVG += "\" y=\"0\" x=\"0\" stroke=\"#000\" fill=\"green\" style=\"fill-opacity: 0.5\"/>\n";
+
     SVG += "</g>\n</svg>\n";
+    SAP_parse(SVG);
+    SAP_salvaSVG(SVG);
+}
 
-    
+//dato SVG questa funzione prende la sotto-stringa che parte da transform fino ad un valore.
+string SAP_extractValue(string svg, string startingValue, string endingValue)
+{
+    size_t find1 = svg.find(startingValue) + startingValue.size();
+    size_t find2 = svg.find(endingValue, find1);
+    string element = svg.substr(find1, find2 - find1);
+    return element;
+}
 
-    cout << SVG << endl;
+device *SAP_parse(string SVG)
+{
+ 
+    double angBase, angGiunto, lunghezza, altezza;
+    string astaBase = SAP_extractValue(SVG, "<rect ", "/>");
+    SVG = SVG.replace(SVG.find("<rect "),sizeof(astaBase), astaBase);
+    string astaGiunto = SAP_extractValue(SVG, "<rect ", "/>");
 
-    cout << x_giunto << endl;
+    angBase = 90-stod(SAP_extractValue(astaBase,"rotate(",","));
+    lunghezza = stod(SAP_extractValue(astaBase,"height=\"","\""));
+    altezza = stod(SAP_extractValue(astaBase,"width=\"","\""));
 
-    cout << 90-dispositivo->angoloBase <<endl;
+    angGiunto = -stod(SAP_extractValue(astaGiunto,"rotate(",","));
+
+    //ci andranno in controlli degli angoli all'interno dei limiti imposti
+
+
+    return SAP_device_init(lunghezza, altezza, angBase, angGiunto);
 }

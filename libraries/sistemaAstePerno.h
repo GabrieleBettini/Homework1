@@ -1,4 +1,7 @@
 #include <iostream>
+#include <string>
+
+using namespace std;
 
 struct asta
 {
@@ -25,4 +28,10 @@ device *SAP_device_init(double, double, float, float);
 
 void SAP_motoAngolo(float, float, device *);
 
+void SAP_salvaSVG (string SVG);
+
 void SAP_drawDevice(device *);
+
+string SAP_extractValue(string, string, string);
+
+device * SAP_parse (string);
