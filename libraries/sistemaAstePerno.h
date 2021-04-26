@@ -7,9 +7,9 @@ struct asta
 {
     double lunghezza;
     double altezza;
-    
+
     //posizione perno all'interno dell'asta
-    double x; 
+    double x;
     double y;
 };
 
@@ -26,12 +26,16 @@ asta *SAP_asta_init(double, double);
 
 device *SAP_device_init(double, double, float, float);
 
+bool SAP_controlloAste(double, double);
+
+bool SAP_controlloAngoli(float, float); 
+
 void SAP_motoAngolo(float, float, device *);
 
-void SAP_salvaSVG (string SVG);
+void SAP_salvaSVG(string SVG);
 
-void SAP_drawDevice(device *);
+void SAP_disegnaDevice(device *);
 
-string SAP_extractValue(string, string, string);
+string SAP_estraiValore(string, string, string);
 
-device * SAP_parse (string);
+device *SAP_parse(string);

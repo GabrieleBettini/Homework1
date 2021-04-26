@@ -9,12 +9,38 @@
 using namespace std;
 
 // inizializzazione di un asta
-asta *SAP_asta_init(double lunghezza, double altezza)
+
+
+bool SAP_controlloAste (double lunghezza, double altezza) 
 {
-    //controllo dimensioni
-    if (altezza > lunghezza)
+     //controllo dimensioni
+    if (altezza >= lunghezza)
     {
         cout << "Errore l'altezza dell'asta non può essere superiore alla lunghezza" << endl;
+        return false;
+    }
+    return true;
+}
+
+bool SAP_controlloAngoli (float angBase, float angGiunto) {
+    if (angBase > 90 || angBase < 45)
+    {
+        cout << "Errore: l'angolo base deve essere compreso tra 45 e 90 gradi" << endl;
+        return false;
+    }
+    if (angGiunto < 0 || angGiunto > 90)
+    {
+        cout << "Errore: l'angolo di giunzione deve essere compreso tra 0 e 90 gradi" << endl;
+        return false;
+    }
+    return true;
+
+}
+
+asta *SAP_asta_init(double lunghezza, double altezza)
+{
+    
+    if (!SAP_controlloAste(lunghezza, altezza)) {
         return NULL;
     }
 
@@ -41,16 +67,12 @@ device *SAP_device_init(double diml, double dimh, float angBase, float angGiunto
         return NULL;
     }
 
-    if ((angBase > 90 || angBase < 45) && false)
+    //posso togliere il controllo per far muovere completamente le 2 aste rispetto al centro di rotazione
+    if (!SAP_controlloAngoli(angBase,angGiunto))
     {
-        cout << "Errore: l'angolo base deve essere compreso tra 45 e 90 gradi" << endl;
         return NULL;
     }
-    if (angGiunto < 0 || angGiunto > 90)
-    {
-        cout << "Errore: l'angolo di giunzione deve essere compreso tra 0 e 90 gradi" << endl;
-        return NULL;
-    }
+    
     //alloco memoria per dispositivo
     device *dispositivo = new device;
     //inizializzo il device
@@ -66,19 +88,16 @@ device *SAP_device_init(double diml, double dimh, float angBase, float angGiunto
 void SAP_motoAngolo(float angBase, float angGiunto, device *puntatoreDispositivo)
 {
     float sommaAngBase = angBase + puntatoreDispositivo->angoloBase;
-    if (sommaAngBase > 90 || sommaAngBase < 45)
-    {
-        cout << "Errore: l'angolo base deve essere compreso tra 45 e 90 gradi" << endl;
-        return;
-    }
+    
     float sommaAngGiunto = angGiunto + puntatoreDispositivo->angoloGiunto;
-    if (sommaAngGiunto < 0 || sommaAngGiunto > 90)
-    {
-        cout << "Errore: l'angolo di giunzione deve essere compreso tra 0 e 90 gradi" << endl;
-        return;
-    }
+    
+    if (SAP_controlloAngoli(sommaAngBase, sommaAngGiunto)) {
+
     puntatoreDispositivo->angoloBase = sommaAngBase;
     puntatoreDispositivo->angoloGiunto = sommaAngGiunto;
+    
+    }
+
 }
 
 //salvataggio SVG in un file
@@ -96,7 +115,8 @@ void SAP_salvaSVG(string SVG)
     sistemaAstePerno.close();
 }
 
-void SAP_drawDevice(device *dispositivo)
+
+void SAP_disegnaDevice(device *dispositivo)
 {
     double canvasW = 800;
     double canvasH = 600;
@@ -129,7 +149,7 @@ void SAP_drawDevice(device *dispositivo)
 }
 
 //dato SVG questa funzione prende la sotto-stringa che parte da transform fino ad un valore.
-string SAP_extractValue(string svg, string startingValue, string endingValue)
+string SAP_estraiValore(string svg, string startingValue, string endingValue)
 {
     size_t find1 = svg.find(startingValue) + startingValue.size();
     size_t find2 = svg.find(endingValue, find1);
@@ -139,20 +159,31 @@ string SAP_extractValue(string svg, string startingValue, string endingValue)
 
 device *SAP_parse(string SVG)
 {
- 
+
     double angBase, angGiunto, lunghezza, altezza;
-    string astaBase = SAP_extractValue(SVG, "<rect ", "/>");
-    SVG = SVG.replace(SVG.find("<rect "),sizeof(astaBase), astaBase);
-    string astaGiunto = SAP_extractValue(SVG, "<rect ", "/>");
+    string astaBase = SAP_estraiValore(SVG, "<rect ", "/>");
+    SVG = SVG.replace(SVG.find("<rect "), sizeof(astaBase), astaBase);
+    string astaGiunto = SAP_estraiValore(SVG, "<rect ", "/>");
 
-    angBase = 90-stod(SAP_extractValue(astaBase,"rotate(",","));
-    lunghezza = stod(SAP_extractValue(astaBase,"height=\"","\""));
-    altezza = stod(SAP_extractValue(astaBase,"width=\"","\""));
+    angBase = 90 - stod(SAP_estraiValore(astaBase, "rotate(", ","));
+    lunghezza = stod(SAP_estraiValore(astaBase, "height=\"", "\""));
+    altezza = stod(SAP_estraiValore(astaBase, "width=\"", "\""));
 
-    angGiunto = -stod(SAP_extractValue(astaGiunto,"rotate(",","));
+    angGiunto = -stod(SAP_estraiValore(astaGiunto, "rotate(", ","));
 
     //ci andranno in controlli degli angoli all'interno dei limiti imposti
-
+    //-------------------------------------------------------------------------------
+    if (angBase > 90 || angBase < 45)
+    {
+        cout << "Errore: l'angolo base deve essere compreso tra 45 e 90 gradi" << endl;
+        return NULL;
+    }
+    else if (angGiunto<0, angGiunto> 90)
+    {
+        cout << "Errore: l'angolo di giunzione deve essere compreso tra 0 e 90 gradi" << endl;
+        return NULL;
+    }
+    //-------------------------------------------------------------------------------
 
     return SAP_device_init(lunghezza, altezza, angBase, angGiunto);
 }
