@@ -13,8 +13,7 @@ int main()
     device *dispositivo = inserisciDati();
     SAP_printDevice(dispositivo);
     menu(dispositivo);
-    SAP_disegnaDevice(dispositivo);
-    SAP_salvaSVG("");
+    
     /*     SAP_motoAngolo(-angoloBase_rot, -angoloGiunto_rot, dispositivo);
  */
     /* SAP_printDevice(dispositivo); */
