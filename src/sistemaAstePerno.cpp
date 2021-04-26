@@ -8,21 +8,62 @@
 
 using namespace std;
 
+void SAP_printDevice(device *dispositivo)
+{
+    cout << "-------------------------------------------------" << endl;
+    cout << "Lunghezza brccio base: " << dispositivo->astaBase.lunghezza << endl;
+    cout << "Altezza braccio base: " << dispositivo->astaBase.altezza << endl;
+    cout << "Angolo base: " << dispositivo->angoloBase << endl;
+    cout << "Lunghezza brccio giunto: " << dispositivo->astaGiunto.lunghezza << endl;
+    cout << "Altezza braccio giunto: " << dispositivo->astaGiunto.altezza << endl;
+    cout << "Angolo giunto: " << dispositivo->angoloGiunto << endl;
+    cout << "-------------------------------------------------" << endl;
+}
+
+//modifica angoli aste
+void SAP_motoAngolo(float angBase, float angGiunto, device *puntatoreDispositivo)
+{
+    float sommaAngBase = angBase + puntatoreDispositivo->angoloBase;
+
+    float sommaAngGiunto = angGiunto + puntatoreDispositivo->angoloGiunto;
+
+    if (SAP_controlloAngoli(sommaAngBase, sommaAngGiunto))
+    {
+
+        puntatoreDispositivo->angoloBase = sommaAngBase;
+        puntatoreDispositivo->angoloGiunto = sommaAngGiunto;
+    }
+}
+
+void SAP_distruggiDispositivo(device *dispositivo)
+{
+
+    if (dispositivo == NULL)
+        return;
+
+    delete dispositivo;
+}
+
 // inizializzazione di un asta
 
-
-bool SAP_controlloAste (double lunghezza, double altezza) 
+bool SAP_controlloAste(double lunghezza, double altezza)
 {
-     //controllo dimensioni
+    //controllo dimensioni
     if (altezza >= lunghezza)
     {
         cout << "Errore l'altezza dell'asta non può essere superiore alla lunghezza" << endl;
         return false;
     }
+    else if (altezza <= 0 || lunghezza <= 0)
+    {
+        cout << "I valori dell'asta non possono essere negativi" << endl;
+        return false;
+    }
     return true;
 }
 
-bool SAP_controlloAngoli (float angBase, float angGiunto) {
+bool SAP_controlloAngoli(float angBase, float angGiunto)
+{
     if (angBase > 90 || angBase < 45)
     {
         cout << "Errore: l'angolo base deve essere compreso tra 45 e 90 gradi" << endl;
@@ -34,13 +75,13 @@ bool SAP_controlloAngoli (float angBase, float angGiunto) {
         return false;
     }
     return true;
-
 }
 
 asta *SAP_asta_init(double lunghezza, double altezza)
 {
-    
-    if (!SAP_controlloAste(lunghezza, altezza)) {
+
+    if (!SAP_controlloAste(lunghezza, altezza))
+    {
         return NULL;
     }
 
@@ -68,11 +109,11 @@ device *SAP_device_init(double diml, double dimh, float angBase, float angGiunto
     }
 
     //posso togliere il controllo per far muovere completamente le 2 aste rispetto al centro di rotazione
-    if (!SAP_controlloAngoli(angBase,angGiunto))
+    if (!SAP_controlloAngoli(angBase, angGiunto))
     {
         return NULL;
     }
-    
+
     //alloco memoria per dispositivo
     device *dispositivo = new device;
     //inizializzo il device
@@ -84,23 +125,7 @@ device *SAP_device_init(double diml, double dimh, float angBase, float angGiunto
     return dispositivo;
 }
 
-//modifica angoli aste
-void SAP_motoAngolo(float angBase, float angGiunto, device *puntatoreDispositivo)
-{
-    float sommaAngBase = angBase + puntatoreDispositivo->angoloBase;
-    
-    float sommaAngGiunto = angGiunto + puntatoreDispositivo->angoloGiunto;
-    
-    if (SAP_controlloAngoli(sommaAngBase, sommaAngGiunto)) {
-
-    puntatoreDispositivo->angoloBase = sommaAngBase;
-    puntatoreDispositivo->angoloGiunto = sommaAngGiunto;
-    
-    }
-
-}
-
-//salvataggio SVG in un file
+//salvataggio SVG in un file // da vedere da matteo cosa c'è di diverso
 void SAP_salvaSVG(string SVG)
 {
 
@@ -115,7 +140,7 @@ void SAP_salvaSVG(string SVG)
     sistemaAstePerno.close();
 }
 
-
+//funazione per disegnare il device
 void SAP_disegnaDevice(device *dispositivo)
 {
     double canvasW = 800;
@@ -166,13 +191,16 @@ device *SAP_parse(string SVG)
     string astaGiunto = SAP_estraiValore(SVG, "<rect ", "/>");
 
     angBase = 90 - stod(SAP_estraiValore(astaBase, "rotate(", ","));
+    angGiunto = -stod(SAP_estraiValore(astaGiunto, "rotate(", ","));
     lunghezza = stod(SAP_estraiValore(astaBase, "height=\"", "\""));
     altezza = stod(SAP_estraiValore(astaBase, "width=\"", "\""));
 
-    angGiunto = -stod(SAP_estraiValore(astaGiunto, "rotate(", ","));
-
-    //ci andranno in controlli degli angoli all'interno dei limiti imposti
+    //ci andranno in controlli degli angoli all'interno dei limiti imposti // non è già questo scritto???
     //-------------------------------------------------------------------------------
+
+    SAP_controlloAste(lunghezza, altezza);
+    SAP_controlloAngoli(angBase, angGiunto);
+
     if (angBase > 90 || angBase < 45)
     {
         cout << "Errore: l'angolo base deve essere compreso tra 45 e 90 gradi" << endl;
@@ -186,4 +214,109 @@ device *SAP_parse(string SVG)
     //-------------------------------------------------------------------------------
 
     return SAP_device_init(lunghezza, altezza, angBase, angGiunto);
+}
+
+device *inserisciDati()
+{
+    double lunghezza;
+    double altezza;
+    float angoloBase_rot;
+    float angoloGiunto_rot;
+
+    do
+    {
+        cout << "Inserire lunghezza bracci:" << endl;
+        cin >> lunghezza;
+        cout << "Inserire altezza bracci:" << endl;
+        cin >> altezza;
+    } while (!SAP_controlloAste(lunghezza, altezza));
+
+    do
+    {
+        cout << "Inserire rotazione angolo di base:" << endl;
+        cin >> angoloBase_rot;
+        cout << "Inserire rotazione angolo al giunto:" << endl;
+        cin >> angoloGiunto_rot;
+    } while (!SAP_controlloAngoli(angoloBase_rot, angoloGiunto_rot));
+
+    //creazione del dispositivo con misure assegnate
+    device *dispositivo = SAP_device_init(lunghezza, altezza, angoloBase_rot, angoloGiunto_rot);
+
+    return dispositivo;
+}
+
+//funzione per creare il menu di inserimento dati
+void menu(device *dispositivo)
+{
+
+    double lunghezza;
+    double altezza;
+    float angoloBase_rot;
+    float angoloGiunto_rot;
+    char scelta;
+
+    do
+    {
+        SAP_disegnaDevice(dispositivo);
+
+        cout << "1. Modifica misura lunghezza aste" << endl;
+        cout << "2. Modifica misura altezza aste" << endl;
+        cout << "3. Modifica angolo di base" << endl;
+        cout << "4. Modifica angolo di giunzione" << endl;
+        cout << "5. Esci" << endl;
+        //aggiungo altre opzioni, ex. sposta angolo base...
+        cin >> scelta;
+
+        switch (scelta)
+        {
+        case '1':
+            cout << "Inserisci nuovo valore lunghezza aste" << endl;
+            cin >> lunghezza;
+
+            if (SAP_controlloAste(lunghezza, dispositivo->astaBase.altezza))
+            {
+                dispositivo->astaBase.lunghezza = lunghezza;
+            }
+
+            break;
+        case '2':
+            cout << "Inserisci nuovo valore altezza aste" << endl;
+            cin >> altezza;
+
+            if (SAP_controlloAste(dispositivo->astaBase.lunghezza, altezza))
+            {
+                dispositivo->astaBase.altezza = altezza;
+            }
+
+            break;
+        case '3':
+            cout << "Inserisci nuovo valore angolo di base" << endl;
+            cin >> angoloBase_rot;
+
+            if (SAP_controlloAngoli(angoloBase_rot, dispositivo->angoloGiunto))
+            {
+                dispositivo->angoloBase = angoloBase_rot;
+            }
+
+            break;
+        case '4':
+            cout << "Inserisci nuovo valore angolo di giunzione" << endl;
+            cin >> angoloGiunto_rot;
+
+            if (SAP_controlloAngoli(dispositivo->angoloBase, angoloGiunto_rot))
+            {
+                dispositivo->angoloGiunto = angoloGiunto_rot;
+            }
+
+            break;
+        case '5':
+
+            // mi viene fuori "Errore l'altezza dell'asta non può essere superiore alla lunghezza" due volte, anche prima di fare la funzione
+            SAP_distruggiDispositivo(dispositivo);
+            return;
+        default:
+            cout << "Errore: scelta non contemplata" << endl;
+            break;
+        }
+    } while (scelta != '5');
 }
