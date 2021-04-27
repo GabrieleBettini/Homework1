@@ -1,0 +1,7 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+<g>
+<title>Sistema 2 aste con perno</title>
+<rect transform="translate(400.000000,300.000000)rotate(0.000000,10.000000,290.000000)" id="svg_1" height="300.000000" width="20.000000" y="0" x="0" stroke="#000" fill="red"/>
+<rect transform="translate(400.000000,300.000000)rotate(-90.000000,10.000000,10.000000)" id="svg_2" height="300.000000" width="20.000000" y="0" x="0" stroke="#000" fill="green" style="fill-opacity: 0.5"/>
+</g>
+</svg>

@@ -1,21 +1,28 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(structure)
+project(sistemaAstePerno)
 
 # Standard set to 17 to have mandatory RVO
 set(CMAKE_CXX_STANDARD 17)
 
 
 # EXECUTABLE SECTION
-add_executable(mainEntry main.cpp)
-target_include_directories(mainEntry PRIVATE src)
+add_executable(mainDevice main.cpp)
+target_include_directories(mainDevice PUBLIC libraries)
 # Class A is not a library: its source file needs to be included in the target sources
-target_sources(mainEntry PRIVATE src/mycomponent.cpp)
-target_link_libraries(mainEntry)
+target_sources(mainDevice PUBLIC libraries/sistemaAstePerno.cpp)
+target_link_libraries(mainDevice)
 
 # TESTS SECTION
 # Basically makes CMake read the CMakeLists.txt file contained in tests
 # add_subdirectory(tests)
+
+# EXECUTABLE SECTION
+add_executable(testCases tests/test_device.cpp)
+target_include_directories(testCases PUBLIC ../libraries/sistemaAstePerno.h)
+# Class A is not a library: its source file needs to be included in the target sources
+target_sources(testCases PUBLIC libraries/sistemaAstePerno.cpp)
+target_link_libraries(testCases)
 
 
 # Explain what the PRIVATE, INTERFACE, PUBLIC keyword all mean
