@@ -46,6 +46,6 @@ device *SAP_inserisciDatiMenu();
 
 void SAP_menu(device *);
 
-void SAP_printDatiDevice(device *);
+void SAP_stampaDatiDevice(device *);
 
 device *SAP_inserisciDati();

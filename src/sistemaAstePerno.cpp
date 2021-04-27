@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void SAP_printDatiDevice(device *dispositivo)
+void SAP_stampaDatiDevice(device *dispositivo)
 {
     cout << "-------------------------------------------------" << endl;
     cout << "Lunghezza brccio base: " << dispositivo->astaBase.lunghezza << endl;
@@ -21,6 +21,7 @@ void SAP_printDatiDevice(device *dispositivo)
 }
 
 //modifica angoli aste
+//funzione non utilizzata nel mio device
 void SAP_motoAngolo(float angBase, float angGiunto, device *puntatoreDispositivo)
 {
     float sommaAngBase = angBase + puntatoreDispositivo->angoloBase;
@@ -311,6 +312,8 @@ void SAP_menu(device *dispositivo)
     } while (scelta != '5');
 }
 
+//inserimento dati nel device senza usare il menu
+//non utilizzata nel mio device
 device SAP_inserisciDati(double lunghezza, double altezza, double angoloBase, double angoloGiunto) 
 {
     device *dim = new device;
