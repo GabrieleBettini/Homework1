@@ -314,13 +314,13 @@ void SAP_menu(device *dispositivo)
 
 //inserimento dati nel device senza usare il menu
 //non utilizzata nel mio device
-device SAP_inserisciDati(double lunghezza, double altezza, double angoloBase, double angoloGiunto) 
+device SAP_inserisciDati(double lunghezza, double altezza, double angoloBase, double angoloGiunto)
 {
     device *dim = new device;
 
     dim->astaBase.lunghezza = lunghezza;
     dim->astaBase.altezza = altezza;
-    
+
     dim->astaGiunto.lunghezza = lunghezza;
     dim->astaGiunto.altezza = altezza;
 

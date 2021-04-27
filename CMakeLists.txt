@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(mainDevice main.cpp)
 target_include_directories(mainDevice PUBLIC libraries)
 # Class A is not a library: its source file needs to be included in the target sources
-target_sources(mainDevice PUBLIC src/sistemaAstePerno.cpp)
+target_sources(mainDevice PUBLIC libraries/sistemaAstePerno.cpp)
 target_link_libraries(mainDevice)
 
 # TESTS SECTION
@@ -19,9 +19,9 @@ target_link_libraries(mainDevice)
 
 # EXECUTABLE SECTION
 add_executable(testCases tests/test_device.cpp)
-target_include_directories(testCases PRIVATE ../libraries)
+target_include_directories(testCases PUBLIC ../libraries/sistemaAstePerno.h)
 # Class A is not a library: its source file needs to be included in the target sources
-target_sources(testCases PRIVATE src/sistemaAstePerno.cpp)
+target_sources(testCases PUBLIC libraries/sistemaAstePerno.cpp)
 target_link_libraries(testCases)
 
 

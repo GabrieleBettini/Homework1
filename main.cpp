@@ -1,5 +1,5 @@
 #include <iostream>
-#include "sistemaAstePerno.h"
+#include "../libraries/sistemaAstePerno.h"
 
 using namespace std;
 
