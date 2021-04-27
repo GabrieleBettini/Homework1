@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void SAP_printDevice(device *dispositivo)
+void SAP_printDatiDevice(device *dispositivo)
 {
     cout << "-------------------------------------------------" << endl;
     cout << "Lunghezza brccio base: " << dispositivo->astaBase.lunghezza << endl;
@@ -108,7 +108,7 @@ device *SAP_device_init(double diml, double dimh, float angBase, float angGiunto
         return NULL;
     }
 
-    //posso togliere il controllo per far muovere completamente le 2 aste rispetto al centro di rotazione
+    //mi serve questo controllo???
     if (!SAP_controlloAngoli(angBase, angGiunto))
     {
         return NULL;
@@ -206,7 +206,7 @@ device *SAP_parse(string SVG)
     return SAP_device_init(lunghezza, altezza, angBase, angGiunto);
 }
 
-device *inserisciDati()
+device *SAP_inserisciDatiMenu()
 {
     double lunghezza;
     double altezza;
@@ -236,7 +236,7 @@ device *inserisciDati()
 }
 
 //funzione per creare il menu di inserimento dati
-void menu(device *dispositivo)
+void SAP_menu(device *dispositivo)
 {
 
     double lunghezza;
@@ -256,7 +256,6 @@ void menu(device *dispositivo)
         cout << "3. Modifica angolo di base" << endl;
         cout << "4. Modifica angolo di giunzione" << endl;
         cout << "5. Esci" << endl;
-        //aggiungo altre opzioni, ex. sposta angolo base...
         cin >> scelta;
 
         switch (scelta)
@@ -303,7 +302,6 @@ void menu(device *dispositivo)
             break;
         case '5':
 
-            // mi viene fuori "Errore l'altezza dell'asta non può essere superiore alla lunghezza" due volte, anche prima di fare la funzione
             SAP_distruggiDispositivo(dispositivo);
             return;
         default:
@@ -311,4 +309,18 @@ void menu(device *dispositivo)
             break;
         }
     } while (scelta != '5');
+}
+
+device SAP_inserisciDati(double lunghezza, double altezza, double angoloBase, double angoloGiunto) 
+{
+    device *dim = new device;
+
+    dim->astaBase.lunghezza = lunghezza;
+    dim->astaBase.altezza = altezza;
+    
+    dim->astaGiunto.lunghezza = lunghezza;
+    dim->astaGiunto.altezza = altezza;
+
+    dim->angoloBase = angoloBase;
+    dim->angoloGiunto = angoloGiunto;
 }

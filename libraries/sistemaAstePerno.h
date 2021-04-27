@@ -42,8 +42,10 @@ string SAP_estraiValore(string, string, string);
 
 device *SAP_parse(string);
 
-device *inserisciDati();
+device *SAP_inserisciDatiMenu();
 
-void menu(device *);
+void SAP_menu(device *);
 
-void SAP_printDevice(device *);
+void SAP_printDatiDevice(device *);
+
+device *SAP_inserisciDati();

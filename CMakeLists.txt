@@ -7,15 +7,22 @@ set(CMAKE_CXX_STANDARD 17)
 
 
 # EXECUTABLE SECTION
-add_executable(sistemaAstePerno main.cpp)
-target_include_directories(sistemaAstePerno PUBLIC libraries)
+add_executable(mainDevice main.cpp)
+target_include_directories(mainDevice PUBLIC libraries)
 # Class A is not a library: its source file needs to be included in the target sources
-target_sources(sistemaAstePerno PUBLIC src/sistemaAstePerno.cpp)
-target_link_libraries(sistemaAstePerno)
+target_sources(mainDevice PUBLIC src/sistemaAstePerno.cpp)
+target_link_libraries(mainDevice)
 
 # TESTS SECTION
 # Basically makes CMake read the CMakeLists.txt file contained in tests
 # add_subdirectory(tests)
+
+# EXECUTABLE SECTION
+add_executable(testCases tests/test_device.cpp)
+target_include_directories(testCases PRIVATE ../libraries)
+# Class A is not a library: its source file needs to be included in the target sources
+target_sources(testCases PRIVATE src/sistemaAstePerno.cpp)
+target_link_libraries(testCases)
 
 
 # Explain what the PRIVATE, INTERFACE, PUBLIC keyword all mean
