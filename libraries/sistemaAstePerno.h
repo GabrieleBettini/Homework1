@@ -47,6 +47,8 @@ device *SAP_parse(string);
 
 device *SAP_inserisciDatiMenu();
 
+device *SAP_caricaSVG(string );
+
 void SAP_menu(device *);
 
 void SAP_stampaDatiDevice(device *);

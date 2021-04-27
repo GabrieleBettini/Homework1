@@ -136,14 +136,37 @@ void SAP_salvaSVG(string SVG)
 {
 
     ofstream sistemaAstePerno("sistemaAstePerno.svg");
-    if (!sistemaAstePerno)
+    if (!sistemaAstePerno || !sistemaAstePerno.is_open())
     {
-        cout << "Errore: non è stato possibile aprire il file corretto.";
+        cout << "Errore: non è stato possibile salvare il file corretto.";
         return;
     }
 
     sistemaAstePerno << SVG;
     sistemaAstePerno.close();
+}
+
+device *SAP_caricaSVG(string nomeFile)
+{
+    string SVG;
+    string SVGfinale;
+    ifstream sistemaAstePerno(nomeFile);
+    
+     if (!sistemaAstePerno || !sistemaAstePerno.is_open())
+    {
+        cout << "Errore: non è stato possibile aprire il file corretto." << endl;
+        return NULL;
+    } 
+    while (getline(sistemaAstePerno,SVG))
+    {
+        
+    SVGfinale += SVG + "\n" ;
+    }
+    
+    
+    sistemaAstePerno.close();
+
+    return SAP_parse(SVGfinale);
 }
 
 //funzione per disegnare il device
@@ -204,16 +227,15 @@ device *SAP_parse(string SVG)
     dispPosX = stod(SAP_estraiValore(astaBase, "translate(", ","));
     dispPosY = stod(SAP_estraiValore(astaBase, ",", ")"));
     angBase = 90 - stod(SAP_estraiValore(astaBase, "rotate(", ","));
-    angGiunto = -stod(SAP_estraiValore(angGiu, "rotate(", ","));
+    angGiunto = stod(SAP_estraiValore(angGiu, "rotate(", ","));
     lunghezza = stod(SAP_estraiValore(astaBase, "height=\"", "\""));
     altezza = stod(SAP_estraiValore(astaBase, "width=\"", "\""));
 
-    if (!SAP_controlloAngoli(angBase, angGiunto) || !SAP_controlloAste(lunghezza, altezza) || !SAP_controlloPosizioneDevice(dispPosX,dispPosY,canvasWidth,canvasHeight))
+    if (!SAP_controlloAngoli(angBase, angGiunto) || !SAP_controlloAste(lunghezza, altezza) || !SAP_controlloPosizioneDevice(dispPosX, dispPosY, canvasWidth, canvasHeight))
     {
         return NULL;
     }
-    
-    
+
     return SAP_device_init(lunghezza, altezza, angBase, angGiunto, dispPosX, dispPosY);
 }
 
@@ -237,9 +259,9 @@ device *SAP_inserisciDatiMenu()
 
     do
     {
-        cout << "Inserisci posizione X iniziale disegno:" << endl;
+        cout << "Inserisci posizione X iniziale dispositivo:" << endl;
         cin >> posizioneIniX;
-        cout << "Inserisci posizione Y iniziale disegno:" << endl;
+        cout << "Inserisci posizione Y iniziale dispositivo:" << endl;
         cin >> posizioneIniY;
     } while (!SAP_controlloPosizioneDevice(posizioneIniX, posizioneIniY, canvasWidth, canvasHeight));
 
@@ -274,7 +296,7 @@ void SAP_menu(device *dispositivo)
     float angoloBase_rot;
     float angoloGiunto_rot;
     char scelta;
-
+    string nomeFile = "";
     do
     {
         if (dispositivo != NULL)
@@ -285,7 +307,8 @@ void SAP_menu(device *dispositivo)
         cout << "2. Modifica misura altezza aste" << endl;
         cout << "3. Modifica angolo di base" << endl;
         cout << "4. Modifica angolo di giunzione" << endl;
-        cout << "5. Esci" << endl;
+        cout << "5. Carica da SVG" << endl;
+        cout << "6. Esci" << endl;
         cin >> scelta;
 
         switch (scelta)
@@ -331,6 +354,13 @@ void SAP_menu(device *dispositivo)
 
             break;
         case '5':
+            cout << "Inserisci il nome o percorso del file da caricare" << endl;
+            
+            cin >> nomeFile;
+            dispositivo = SAP_caricaSVG(nomeFile);
+            SAP_stampaDatiDevice(dispositivo);
+            break;
+        case '6':
 
             SAP_distruggiDispositivo(dispositivo);
             return;
@@ -351,7 +381,6 @@ bool SAP_controlloPosizioneDevice(double posX, double posY, double canvasX, doub
     if (canvasX <= 0 || canvasY <= 0)
     {
         cout << "Errore: le dimensioni del canvas devono essere positive e maggiori di 0" << endl;
-        
     }
     return true;
 }
