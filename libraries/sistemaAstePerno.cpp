@@ -14,6 +14,10 @@ double canvasHeight = 800;
 void SAP_stampaDatiDevice(device *dispositivo)
 {
     cout << "-------------------------------------------------" << endl;
+    cout << "Larghezza del canvas: " << canvasWidth << endl;
+    cout << "Altezza del canvas: " << canvasWidth << endl;
+    cout << "Posizione X iniziale dispositivo: " << dispositivo->astaBase.posizioneX << endl;
+    cout << "Posizione Y iniziale dispositivo: " << dispositivo->astaBase.posizioneY << endl;
     cout << "Lunghezza brccio base: " << dispositivo->astaBase.lunghezza << endl;
     cout << "Altezza braccio base: " << dispositivo->astaBase.altezza << endl;
     cout << "Angolo base: " << dispositivo->angoloBase << endl;

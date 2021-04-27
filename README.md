@@ -10,6 +10,10 @@ Costituito da 2 aste di dimensioni uguali ognuna con un proprio centro di rotazi
 
 ### Parametri
 
+* lunghezza canvas
+* altezza canvas
+* posizione X iniziale dispositivo
+* posizione Y iniziale dispositivo
 * lunghezza dell'asta
 * altezza dell'asta
 * angolo di rotazione dell' asta di base
@@ -17,20 +21,22 @@ Costituito da 2 aste di dimensioni uguali ognuna con un proprio centro di rotazi
 
 ### Valori vincolati
 
-* lunghezza dell'asta sempre maggiore della sua altezza
-* angolo di rotazione dell' asta di base compreso tra i valori 45 - 90
-* angolo di rotazione dell' asta di giunzione compreso tra i valori 0 - 90
-* centro di rotazione asta di base:
+* dimensioni canvas maggiori di 0
+* lunghezza dell'asta maggiore della sua altezza
+* dimensioni asta base e asta giunto uguali
+* angolo di rotazione dell' asta di base compreso tra i valori 0 - 360
+* angolo di rotazione dell' asta di giunzione compreso tra i valori 0 - 360
+* centro di rotazione asta base:
 ````````````````````````````````````````````````````````````````````````````````````
     $ double x_base = altezza / 2 
    
     $ double y_base = lunghezza - x_base
 ````````````````````````````````````````````````````````````````````````````````````
-* centro di rotazione asta di giunzione:
+* centro di rotazione asta giunto:
 ````````````````````````````````````````````````````````````````````````````````````
-    $ double x_giunto = centroSVGx + (sin(angBase * M_PI / 180) * dispositivo->astaGiunto.lunghezza) - sin(angBase * M_PI / 180) * dispositivo->astaGiunto.altezza;
+    $ double x_base = altezza / 2;
 
-    $ double y_giunto = canvasH - ((centroSVGy + (cos(angBase * M_PI / 180) * dispositivo->astaGiunto.lunghezza) -  dispositivo->astaBase.lunghezza)) - (sin(angBase * M_PI / 180) * dispositivo->astaGiunto.altezza / (1 + cos(angBase * M_PI / 180)));
+    $ double rotAstaTotx = y_base + dispositivo->astaGiunto.lunghezza - dispositivo->astaGiunto.altezza;
 
 ````````````````````````````````````````````````````````````````````````````````````
 
