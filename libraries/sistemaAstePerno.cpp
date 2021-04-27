@@ -8,6 +8,9 @@
 
 using namespace std;
 
+double canvasWidth = 1200;
+double canvasHeight = 800;
+
 void SAP_stampaDatiDevice(device *dispositivo)
 {
     cout << "-------------------------------------------------" << endl;
@@ -90,13 +93,13 @@ asta *SAP_asta_init(double lunghezza, double altezza)
 
     brc->lunghezza = lunghezza;
     brc->altezza = altezza;
-    brc->x = altezza / 2;
-    brc->y = lunghezza - altezza;
+    brc->rotX = altezza / 2;
+    brc->rotY = lunghezza - altezza;
 
     return brc;
 }
 
-device *SAP_device_init(double diml, double dimh, float angBase, float angGiunto)
+device *SAP_device_init(double diml, double dimh, float angBase, float angGiunto, double puntoIniX, double puntoIniY)
 {
     //creazione braccio richiamando la funzione di inizializzazione dell'asta
     //i due bracci di dimensioni uguali
@@ -122,6 +125,8 @@ device *SAP_device_init(double diml, double dimh, float angBase, float angGiunto
     dispositivo->angoloGiunto = angGiunto;
     dispositivo->astaBase = *braccioBase;
     dispositivo->astaGiunto = *braccioGiunto;
+    dispositivo->astaBase.posizioneX = puntoIniX;
+    dispositivo->astaBase.posizioneY = puntoIniY;
 
     return dispositivo;
 }
@@ -141,13 +146,12 @@ void SAP_salvaSVG(string SVG)
     sistemaAstePerno.close();
 }
 
-//funazione per disegnare il device
+//funzione per disegnare il device
 void SAP_disegnaDevice(device *dispositivo)
 {
-    double canvasW = 1200;
-    double canvasH = 800;
+
     string SVG = "";
-    SVG += "<svg width=\"" + to_string(canvasW) + "\" height=\"" + to_string(canvasH) + "\" xmlns=\"http://www.w3.org/2000/svg\">\n";
+    SVG += "<svg width=\"" + to_string(canvasWidth) + "\" height=\"" + to_string(canvasHeight) + "\" xmlns=\"http://www.w3.org/2000/svg\">\n";
     SVG += "<g>\n<title>Sistema 2 aste con perno</title>\n";
     double angBase = 90 - dispositivo->angoloBase;
     double angGiunto = dispositivo->angoloGiunto;
@@ -157,16 +161,16 @@ void SAP_disegnaDevice(device *dispositivo)
     double x_base = altezza / 2;
     double y_base = lunghezza - x_base;
 
-    double centroSVGx = canvasW / 2;
-    double centroSVGy = canvasH / 2;
+    double dispositivoPosX = dispositivo->astaBase.posizioneX;
+    double dispositivoPosY = dispositivo->astaBase.posizioneY;
 
     double rotAstaTotx = y_base + dispositivo->astaGiunto.lunghezza - dispositivo->astaGiunto.altezza;
-    double posAstaGiuntoy = centroSVGy - dispositivo->astaGiunto.lunghezza + dispositivo->astaGiunto.altezza;
+    double posAstaGiuntoy = dispositivoPosY - dispositivo->astaGiunto.lunghezza + dispositivo->astaGiunto.altezza;
 
-    SVG += "<rect transform=\"translate(" + to_string(centroSVGx) + "," + to_string(centroSVGy) + ")rotate(" + to_string(angBase) + "," + to_string(x_base) + ",";
+    SVG += "<rect transform=\"translate(" + to_string(dispositivoPosX) + "," + to_string(dispositivoPosY) + ")rotate(" + to_string(angBase) + "," + to_string(x_base) + ",";
     SVG += to_string(y_base) + ")\" id=\"svg_1\" height=\"" + to_string(lunghezza) + "\" width=\"" + to_string(altezza);
     SVG += "\" y=\"0\" x=\"0\" stroke=\"#000\" fill=\"red\"/>\n";
-    SVG += "<rect transform=\"translate(" + to_string(centroSVGx) + "," + to_string(posAstaGiuntoy) + ")rotate(" + to_string(angBase) + "," + to_string(x_base) + ",";
+    SVG += "<rect transform=\"translate(" + to_string(dispositivoPosX) + "," + to_string(posAstaGiuntoy) + ")rotate(" + to_string(angBase) + "," + to_string(x_base) + ",";
     SVG += to_string(rotAstaTotx) + ")rotate(" + to_string(angGiunto) + "," + to_string(x_base) + "," + to_string(y_base) + ")\" id=\"svg_2\" height=\"" + to_string(lunghezza) + "\" width=\"" + to_string(altezza);
     SVG += "\" y=\"0\" x=\"0\" stroke=\"#000\" fill=\"green\" style=\"fill-opacity: 0.5\"/>\n";
 
@@ -187,24 +191,30 @@ string SAP_estraiValore(string svg, string startingValue, string endingValue)
 device *SAP_parse(string SVG)
 {
 
-    double angBase, angGiunto, lunghezza, altezza;
+    double angBase, angGiunto, lunghezza, altezza, dispPosX, dispPosY;
+
+    canvasWidth = stod(SAP_estraiValore(SVG, "width=\"", "\""));
+    canvasHeight = stod(SAP_estraiValore(SVG, "height=\"", "\""));
+
     string astaBase = SAP_estraiValore(SVG, "<rect ", "/>");
     SVG = SVG.replace(SVG.find("<rect "), sizeof(astaBase), astaBase);
     string astaGiunto = SAP_estraiValore(SVG, "<rect ", "/>");
 
-    string test = SAP_estraiValore(astaGiunto, "rotate(", "/>");
-
+    string angGiu = SAP_estraiValore(astaGiunto, "rotate(", "/>");
+    dispPosX = stod(SAP_estraiValore(astaBase, "translate(", ","));
+    dispPosY = stod(SAP_estraiValore(astaBase, ",", ")"));
     angBase = 90 - stod(SAP_estraiValore(astaBase, "rotate(", ","));
-    angGiunto = -stod(SAP_estraiValore(test, "rotate(", ","));
+    angGiunto = -stod(SAP_estraiValore(angGiu, "rotate(", ","));
     lunghezza = stod(SAP_estraiValore(astaBase, "height=\"", "\""));
     altezza = stod(SAP_estraiValore(astaBase, "width=\"", "\""));
 
-    if (!SAP_controlloAngoli(angBase, angGiunto) || !SAP_controlloAste(lunghezza, altezza))
+    if (!SAP_controlloAngoli(angBase, angGiunto) || !SAP_controlloAste(lunghezza, altezza) || !SAP_controlloPosizioneDevice(dispPosX,dispPosY,canvasWidth,canvasHeight))
     {
         return NULL;
     }
-
-    return SAP_device_init(lunghezza, altezza, angBase, angGiunto);
+    
+    
+    return SAP_device_init(lunghezza, altezza, angBase, angGiunto, dispPosX, dispPosY);
 }
 
 device *SAP_inserisciDatiMenu()
@@ -213,6 +223,25 @@ device *SAP_inserisciDatiMenu()
     double altezza;
     float angoloBase_rot;
     float angoloGiunto_rot;
+    double posizioneIniX;
+    double posizioneIniY;
+
+    do
+    {
+        cout << "Inserisci larghezza del canvas:" << endl;
+        cin >> canvasWidth;
+        cout << "Inserisci altezza del canvas:" << endl;
+        cin >> canvasHeight;
+
+    } while (canvasHeight <= 0 || canvasWidth <= 0);
+
+    do
+    {
+        cout << "Inserisci posizione X iniziale disegno:" << endl;
+        cin >> posizioneIniX;
+        cout << "Inserisci posizione Y iniziale disegno:" << endl;
+        cin >> posizioneIniY;
+    } while (!SAP_controlloPosizioneDevice(posizioneIniX, posizioneIniY, canvasWidth, canvasHeight));
 
     do
     {
@@ -231,7 +260,7 @@ device *SAP_inserisciDatiMenu()
     } while (!SAP_controlloAngoli(angoloBase_rot, angoloGiunto_rot));
 
     //creazione del dispositivo con misure assegnate
-    device *dispositivo = SAP_device_init(lunghezza, altezza, angoloBase_rot, angoloGiunto_rot);
+    device *dispositivo = SAP_device_init(lunghezza, altezza, angoloBase_rot, angoloGiunto_rot, posizioneIniX, posizioneIniY);
 
     return dispositivo;
 }
@@ -312,18 +341,17 @@ void SAP_menu(device *dispositivo)
     } while (scelta != '5');
 }
 
-//inserimento dati nel device senza usare il menu
-//non utilizzata nel mio device
-device SAP_inserisciDati(double lunghezza, double altezza, double angoloBase, double angoloGiunto)
+bool SAP_controlloPosizioneDevice(double posX, double posY, double canvasX, double canvasY)
 {
-    device *dim = new device;
-
-    dim->astaBase.lunghezza = lunghezza;
-    dim->astaBase.altezza = altezza;
-
-    dim->astaGiunto.lunghezza = lunghezza;
-    dim->astaGiunto.altezza = altezza;
-
-    dim->angoloBase = angoloBase;
-    dim->angoloGiunto = angoloGiunto;
+    if (posX > canvasX || posY > canvasY || posX < 0 || posY < 0)
+    {
+        cout << "Errore: la posizione inserita esce dal canvas" << endl;
+        return false;
+    }
+    if (canvasX <= 0 || canvasY <= 0)
+    {
+        cout << "Errore: le dimensioni del canvas devono essere positive e maggiori di 0" << endl;
+        
+    }
+    return true;
 }

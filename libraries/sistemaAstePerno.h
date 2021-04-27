@@ -9,8 +9,11 @@ struct asta
     double altezza;
 
     //posizione perno all'interno dell'asta
-    double x;
-    double y;
+    double rotX;
+    double rotY;
+
+    double posizioneX;
+    double posizioneY;
 };
 
 struct device
@@ -24,7 +27,7 @@ struct device
 
 asta *SAP_asta_init(double, double);
 
-device *SAP_device_init(double, double, float, float);
+device *SAP_device_init(double, double, float, float, double, double);
 
 bool SAP_controlloAste(double, double);
 
@@ -47,5 +50,7 @@ device *SAP_inserisciDatiMenu();
 void SAP_menu(device *);
 
 void SAP_stampaDatiDevice(device *);
+
+bool SAP_controlloPosizioneDevice(double, double, double, double);
 
 device *SAP_inserisciDati();
