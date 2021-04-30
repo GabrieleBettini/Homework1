@@ -13,9 +13,15 @@ target_include_directories(mainDevice PUBLIC libraries)
 target_sources(mainDevice PUBLIC libraries/sistemaAstePerno.cpp)
 target_link_libraries(mainDevice)
 
-# TESTS SECTION
-# Basically makes CMake read the CMakeLists.txt file contained in tests
-# add_subdirectory(tests)
+# EXECUTABLE SECTION
+add_executable(machine machine.cpp)
+target_include_directories(machine PRIVATE libraries)
+# Class A is not a library: its source file needs to be included in the target sources
+target_sources(machine PRIVATE libreries/guida.cpp
+                              libreries/livellaMobile.cpp
+                              libreries/external/Livella.cpp
+                              libreries/external/sistemaAstePerno.cpp)
+target_link_libraries(machine)
 
 # EXECUTABLE SECTION
 add_executable(testCases tests/test_device.cpp)
@@ -24,6 +30,9 @@ target_include_directories(testCases PUBLIC ../libraries/sistemaAstePerno.h)
 target_sources(testCases PUBLIC libraries/sistemaAstePerno.cpp)
 target_link_libraries(testCases)
 
+# TESTS SECTION
+# Basically makes CMake read the CMakeLists.txt file contained in tests
+# add_subdirectory(tests)
 
 # Explain what the PRIVATE, INTERFACE, PUBLIC keyword all mean
 #[=[
