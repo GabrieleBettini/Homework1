@@ -11,6 +11,7 @@ using namespace std;
 double canvasWidth = 1200;
 double canvasHeight = 800;
 
+//funzione che stampa i dati inseriti
 void SAP_stampaDatiDevice(device *dispositivo)
 {
     cout << "-------------------------------------------------" << endl;
@@ -52,8 +53,7 @@ void SAP_distruggiDispositivo(device *dispositivo)
     delete dispositivo;
 }
 
-// inizializzazione di un asta
-
+//funzione che inizializza l'asta
 bool SAP_controlloAste(double lunghezza, double altezza)
 {
     //controllo dimensioni
@@ -70,6 +70,7 @@ bool SAP_controlloAste(double lunghezza, double altezza)
     return true;
 }
 
+//funzione che inizializza gli angoli
 bool SAP_controlloAngoli(float angBase, float angGiunto)
 {
     if (angBase < 0 || angBase > 360)
@@ -85,6 +86,7 @@ bool SAP_controlloAngoli(float angBase, float angGiunto)
     return true;
 }
 
+//funzione che crea l'asta
 asta *SAP_asta_init(double lunghezza, double altezza)
 {
 
@@ -103,6 +105,7 @@ asta *SAP_asta_init(double lunghezza, double altezza)
     return brc;
 }
 
+//funzione che crea il device
 device *SAP_device_init(double diml, double dimh, float angBase, float angGiunto, double puntoIniX, double puntoIniY)
 {
     //creazione braccio richiamando la funzione di inizializzazione dell'asta
@@ -116,7 +119,6 @@ device *SAP_device_init(double diml, double dimh, float angBase, float angGiunto
         return NULL;
     }
 
-    //mi serve questo controllo???
     if (!SAP_controlloAngoli(angBase, angGiunto))
     {
         return NULL;
@@ -135,10 +137,9 @@ device *SAP_device_init(double diml, double dimh, float angBase, float angGiunto
     return dispositivo;
 }
 
-//salvataggio SVG in un file // da vedere da matteo cosa c'è di diverso
+//salvataggio SVG in un file
 void SAP_salvaSVG(string SVG)
 {
-
     ofstream sistemaAstePerno("sistemaAstePerno.svg");
     if (!sistemaAstePerno || !sistemaAstePerno.is_open())
     {
@@ -150,6 +151,7 @@ void SAP_salvaSVG(string SVG)
     sistemaAstePerno.close();
 }
 
+//funzione che carica un file SVG
 device *SAP_caricaSVG(string nomeFile)
 {
     string SVG;
@@ -173,7 +175,7 @@ device *SAP_caricaSVG(string nomeFile)
     return SAP_parse(SVGfinale);
 }
 
-//funzione per disegnare il device
+//funzione per disegnare il file SVG del mio device
 void SAP_disegnaDevice(device *dispositivo)
 {
 
@@ -206,7 +208,7 @@ void SAP_disegnaDevice(device *dispositivo)
     SAP_salvaSVG(SVG);
 }
 
-//dato SVG questa funzione prende la sotto-stringa che parte da transform fino ad un valore.
+//dato SVG questa funzione prende la sotto-stringa.
 string SAP_estraiValore(string svg, string startingValue, string endingValue)
 {
     size_t find1 = svg.find(startingValue) + startingValue.size();
@@ -215,6 +217,7 @@ string SAP_estraiValore(string svg, string startingValue, string endingValue)
     return element;
 }
 
+//funzione che estrapola i dati da SVG
 device *SAP_parse(string SVG)
 {
 
@@ -243,6 +246,7 @@ device *SAP_parse(string SVG)
     return SAP_device_init(lunghezza, altezza, angBase, angGiunto, dispPosX, dispPosY);
 }
 
+//funzione che permette di inserire e/o modificare i dati
 device *SAP_inserisciDatiMenu()
 {
     double lunghezza;
@@ -375,6 +379,7 @@ void SAP_menu(device *dispositivo)
     } while (scelta != '5');
 }
 
+//funzione che controlla se la posizione iniziale del device è ammessa
 bool SAP_controlloPosizioneDevice(double posX, double posY, double canvasX, double canvasY)
 {
     if (posX > canvasX || posY > canvasY || posX < 0 || posY < 0)
