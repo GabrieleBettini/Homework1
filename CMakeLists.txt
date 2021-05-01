@@ -15,12 +15,11 @@ target_link_libraries(mainDevice)
 
 # EXECUTABLE SECTION
 add_executable(machine machine.cpp)
-target_include_directories(machine PRIVATE libraries)
+target_include_directories(machine PUBLIC libraries)
 # Class A is not a library: its source file needs to be included in the target sources
-target_sources(machine PRIVATE libreries/guida.cpp
-                              libreries/livellaMobile.cpp
-                              libreries/external/Livella.cpp
-                              libreries/external/sistemaAstePerno.cpp)
+target_sources(machine PUBLIC libraries/sistemaAstePerno.cpp
+                              libraries/meccPrendiCarta.cpp
+                              libraries/external/guida.cpp)
 target_link_libraries(machine)
 
 # EXECUTABLE SECTION
