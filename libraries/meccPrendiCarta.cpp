@@ -34,6 +34,8 @@ meccPrendiCarta *mecPC (double diml, double dimh, float angBase, float angGiunto
     MPC->guidaP->guida = grect_init( dimx, dimy );
     MPC->guidaP->spessore = dimy/3;
     MPC->guidaP->alpha = 0;
+
+    
 }
 
 bool MPC_posizioneRotazione (float percCorsa, device *dispositivo) 
@@ -41,7 +43,9 @@ bool MPC_posizioneRotazione (float percCorsa, device *dispositivo)
     if (percCorsa >= 95) 
     {
         dispositivo->angoloBase = 45;
-        dispositivo->angoloGiunto = 90; 
+        dispositivo->angoloGiunto = 90;
+        return true;
     }
+    return false;
 }
 
