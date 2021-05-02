@@ -112,7 +112,6 @@ device *SAP_device_init(double diml, double dimh, float angBase, float angGiunto
         return NULL;
     }
 
-    //mi serve questo controllo???
     if (!SAP_controlloAngoli(angBase, angGiunto))
     {
         return NULL;
