@@ -1,7 +1,10 @@
 #include "sistemaAstePerno.h"    
 #include "external/guida.h"
 
-struct  datiMPC
+struct meccPrendiCarta
 {
+    device * dispositivo;
+    GuidaPrismatica * guidaP;
+
     
 };
