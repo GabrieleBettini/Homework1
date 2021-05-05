@@ -37,6 +37,8 @@ void SAP_motoAngolo(float, float, device *);
 
 void SAP_salvaSVG(string SVG);
 
+string SAP_disegnaDaStringa(device *);
+
 void SAP_disegnaDevice(device *);
 
 void SAP_distruggiDispositivo(device *);

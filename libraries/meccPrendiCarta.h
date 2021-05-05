@@ -8,3 +8,6 @@ struct meccPrendiCarta
 
     
 };
+
+meccPrendiCarta *mecPC(double, double,
+                       float, float, float, float);

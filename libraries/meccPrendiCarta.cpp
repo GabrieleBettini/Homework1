@@ -4,18 +4,44 @@
 #include <vector>
 #include "meccPrendiCarta.h"
 
+using namespace std;
+
 #define angBaseIni 90
 #define angGiuntoIni 90
 
-using namespace std;
 
 meccPrendiCarta *mecPC(double diml, double dimh,
                        float posx, float posy, float lungh, float corsa)
 {
-    meccPrendiCarta *MPC = new meccPrendiCarta;
+    device * SAP = SAP_device_init(300, 30, 90, 60, 200, 200);
 
-    asta *braccioBase = SAP_asta_init(diml, dimh);
+    SAP_stampaDatiDevice(SAP);
+    /* SAP_disegnaDevice (SAP); */
+
+    GuidaPrismatica * guida = guida_init(100,200,300,200, 30, 50);
+
+/*     guida_to_SVG(guida,"./guidaSVG", false);
+ */
+    string SVG = "";
+    SVG += "<svg width=\"" + to_string(1000) + "\" height=\"" + to_string(1000) + "\" xmlns=\"http://www.w3.org/2000/svg\">\n";
+    SVG += "<g>\n<title>Sistema 2 aste con perno</title>\n";
+
+    SVG += SAP_disegnaDaStringa(SAP);
+
+    SVG += guida_to_SVGstring(guida);
+
+    SVG += "</g>\n</svg>\n";
+    ofstream meccPrendiCarta("meccPrendiCarta.svg");
+
+    meccPrendiCarta << SVG;
+    meccPrendiCarta.close();
+
+
+
+    /* meccPrendiCarta *MPC = new meccPrendiCarta;
+
     asta *braccioGiunto = SAP_asta_init(diml, dimh);
+    asta *braccioBase = SAP_asta_init(diml, dimh);
 
     if (braccioBase == NULL || braccioGiunto == NULL)
     {
@@ -36,7 +62,7 @@ meccPrendiCarta *mecPC(double diml, double dimh,
     MPC->guidaP->incastri = grect_init(dimh, dimh);
     MPC->guidaP->guida = grect_init(dimh, dimh);
     MPC->guidaP->spessore = dimh / 3;
-    MPC->guidaP->alpha = 0;
+    MPC->guidaP->alpha = 0; */
 }
 
 // funzione che determina la posizione della guida in percentuale alla sua corsa
@@ -48,7 +74,7 @@ float liv_determinacorsa(GuidaPrismatica *guida, float perc)
     return res;
 }
 
-// funzione che, presa la posizione della guida, muove il SAP in poszione attiva
+// funzione che, presa la posizione della guida, muove il SAP in posizione attiva
 bool MPC_posRotazione(float corsa, device *dispositivo)
 {
     GuidaPrismatica *guida;

@@ -150,22 +150,50 @@ device *SAP_caricaSVG(string nomeFile)
     string SVG;
     string SVGfinale;
     ifstream sistemaAstePerno(nomeFile);
-    
-     if (!sistemaAstePerno || !sistemaAstePerno.is_open())
+
+    if (!sistemaAstePerno || !sistemaAstePerno.is_open())
     {
         cout << "Errore: non è stato possibile aprire il file corretto." << endl;
         return NULL;
-    } 
-    while (getline(sistemaAstePerno,SVG))
-    {
-        
-    SVGfinale += SVG + "\n" ;
     }
-    
-    
+    while (getline(sistemaAstePerno, SVG))
+    {
+
+        SVGfinale += SVG + "\n";
+    }
+
     sistemaAstePerno.close();
 
     return SAP_parse(SVGfinale);
+}
+
+string SAP_disegnaDaStringa(device *dispositivo)
+{
+    string SVG = "";
+
+    double angBase = 90 - dispositivo->angoloBase;
+    double angGiunto = dispositivo->angoloGiunto;
+
+    double altezza = dispositivo->astaBase.altezza;
+    double lunghezza = dispositivo->astaBase.lunghezza;
+    double x_base = altezza / 2;
+    double y_base = lunghezza - x_base;
+
+    double dispositivoPosX = dispositivo->astaBase.posizioneX;
+    double dispositivoPosY = dispositivo->astaBase.posizioneY;
+
+    double rotAstaTotx = y_base + dispositivo->astaGiunto.lunghezza - dispositivo->astaGiunto.altezza;
+    double posAstaGiuntoy = dispositivoPosY - dispositivo->astaGiunto.lunghezza + dispositivo->astaGiunto.altezza;
+
+    SVG += "<rect transform=\"translate(" + to_string(dispositivoPosX) + "," + to_string(dispositivoPosY) + ")rotate(" + to_string(angBase) + "," + to_string(x_base) + ",";
+    SVG += to_string(y_base) + ")\" id=\"svg_1\" height=\"" + to_string(lunghezza) + "\" width=\"" + to_string(altezza);
+    SVG += "\" y=\"0\" x=\"0\" stroke=\"#000\" fill=\"red\"/>\n";
+    SVG += "<rect transform=\"translate(" + to_string(dispositivoPosX) + "," + to_string(posAstaGiuntoy) + ")rotate(" + to_string(angBase) + "," + to_string(x_base) + ",";
+    SVG += to_string(rotAstaTotx) + ")rotate(" + to_string(angGiunto) + "," + to_string(x_base) + "," + to_string(y_base) + ")\" id=\"svg_2\" height=\"" + to_string(lunghezza) + "\" width=\"" + to_string(altezza);
+    SVG += "\" y=\"0\" x=\"0\" stroke=\"#000\" fill=\"green\" style=\"fill-opacity: 0.5\"/>\n";
+
+    return SVG;
+    
 }
 
 //funzione per disegnare il device
@@ -354,7 +382,7 @@ void SAP_menu(device *dispositivo)
             break;
         case '5':
             cout << "Inserisci il nome o percorso del file da caricare" << endl;
-            
+
             cin >> nomeFile;
             dispositivo = SAP_caricaSVG(nomeFile);
             SAP_stampaDatiDevice(dispositivo);
