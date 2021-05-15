@@ -9,22 +9,23 @@ using namespace std;
 #define angBaseIni 90
 #define angGiuntoIni 90
 
+double canvasW = 2400;
+double canvasH = 800;
 
 meccPrendiCarta *mecPC(double diml, double dimh,
                        float posx, float posy, float lungh, float corsa)
 {
-    device * SAP = SAP_device_init(300, 30, 90, 60, 200, 200);
+    device *SAP = SAP_device_init(300, 30, 90, 60, 200, 200);
 
     SAP_stampaDatiDevice(SAP);
     /* SAP_disegnaDevice (SAP); */
 
-    GuidaPrismatica * guida = guida_init(100,200,300,200, 30, 50);
+    GuidaPrismatica *guida = guida_init(100, 200, 300, 200, 30, 50);
 
-/*     guida_to_SVG(guida,"./guidaSVG", false);
- */
+    /*  guida_to_SVG(guida,"./guidaSVG", false); */
     string SVG = "";
     SVG += "<svg width=\"" + to_string(1000) + "\" height=\"" + to_string(1000) + "\" xmlns=\"http://www.w3.org/2000/svg\">\n";
-    SVG += "<g>\n<title>Sistema 2 aste con perno</title>\n";
+    SVG += "<g>\n<title>Meccanismo prendi carta</title>\n";
 
     SVG += SAP_disegnaDaStringa(SAP);
 
@@ -35,8 +36,6 @@ meccPrendiCarta *mecPC(double diml, double dimh,
 
     meccPrendiCarta << SVG;
     meccPrendiCarta.close();
-
-
 
     /* meccPrendiCarta *MPC = new meccPrendiCarta;
 
@@ -63,6 +62,71 @@ meccPrendiCarta *mecPC(double diml, double dimh,
     MPC->guidaP->guida = grect_init(dimh, dimh);
     MPC->guidaP->spessore = dimh / 3;
     MPC->guidaP->alpha = 0; */
+}
+
+meccPrendiCarta *datiMecPC()
+{
+
+    double lunghezza;
+    double altezza;
+
+    float angoloBase_rot;
+    float angoloGiunto_rot;
+
+    /* double posizioneIniX;
+    double posizioneIniY;
+ */
+    float posx, posy, l, c, dimx, dimy;
+
+    GuidaPrismatica *guida;
+    guida = new GuidaPrismatica;
+    
+    do
+    {
+        cout << "Inserisci posizione X iniziale dispositivo:" << endl;
+        cin >> posx;
+        cout << "Inserisci posizione Y iniziale dispositivo:" << endl;
+        cin >> posy;
+    } while (!SAP_controlloPosizioneDevice(posx, posy, canvasW, canvasH));
+
+    do
+    {
+        cout << "Inserire lunghezza bracci:" << endl;
+        cin >> lunghezza;
+        cout << "Inserire altezza bracci:" << endl;
+        cin >> altezza;
+    } while (!SAP_controlloAste(lunghezza, altezza));
+
+
+    do
+    {
+        cout << "Specificare le 2 coordinate (x,y) della posizione centrale della guida prismatica: ";
+        cin >> posx >> posy;
+
+    } while (!guida_controlla_integrita(guida));
+    do
+    {
+
+        cout << "Specificare la lunghezza della guida prismatica: ";
+        cin >> l;
+    } while (!guida_controlla_integrita(guida));
+    do
+    {
+
+        cout << "Spceficiare il valore della corsa della guida prismatica: ";
+        cin >> c;
+    } while (!guida_controlla_integrita(guida));
+    do
+    {
+
+        cout << "Specificare la dimensione orizzontale e verticale delle cerniere e della guida: ";
+        cin >> dimx >> dimy;
+    } while (!guida_controlla_integrita(guida));
+
+    meccPrendiCarta *creaMecPc = mecPC(lunghezza, altezza, posx, posy,l, c);
+
+    /* meccPrendiCarta *creaMecPc = SAP_inserisciDatiMenu();       //perché non va bene??? */
+    return creaMecPc;
 }
 
 // funzione che determina la posizione della guida in percentuale alla sua corsa
@@ -93,9 +157,6 @@ bool MPC_posRotazione(float corsa, device *dispositivo)
         dispositivo->angoloGiunto = angGiuntoIni;
     }
 }
-
-
-
 
 // funzione che limita l'esistenza degli angoli
 // MI SERVE?????
