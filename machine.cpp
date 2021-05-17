@@ -6,8 +6,8 @@ int main ()
 {
     mecPC(100,10,30,30,60,60);
 
-    meccPrendiCarta * mecPC = datiMecPC();
-
+/*     meccPrendiCarta * mecPC = datiMecPC();
+ */
     cout << "CIAO" << endl;
     
     return 0;

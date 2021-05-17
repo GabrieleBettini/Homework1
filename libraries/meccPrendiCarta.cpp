@@ -2,6 +2,7 @@
 #include <string.h>
 #include <fstream>
 #include <vector>
+#include <math.h>
 #include "meccPrendiCarta.h"
 
 using namespace std;
@@ -9,19 +10,28 @@ using namespace std;
 #define angBaseIni 90
 #define angGiuntoIni 90
 
-double canvasW = 2400;
+double canvasW = 1000;
 double canvasH = 800;
 
 meccPrendiCarta *mecPC(double diml, double dimh,
                        float posx, float posy, float lungh, float corsa)
 {
-    device *SAP = SAP_device_init(300, 30, 90, 60, 200, 200);
+    /*     double pluto =  -guida->lunghezza/2 + guida->corsa - guida->guida->dim_x/2;
+ */
 
-    SAP_stampaDatiDevice(SAP);
+    GuidaPrismatica *guida = guida_init(500, 500, 300, 0, 30, 50);
+
+    double pippo = canvasW / 2 - 300 / 2 - guida->guida->dim_x/2 + guida->corsa;
+    double angBase = acos((M_PI/2)-((guida->lunghezza - guida->corsa ) / (285*2)));
+    double angGiunto = 180 - 2 * angBase;
+    cout << " prova " << (guida->lunghezza-guida->corsa)/600<< endl;
     /* SAP_disegnaDevice (SAP); */
 
-    GuidaPrismatica *guida = guida_init(100, 200, 300, 200, 30, 50);
+    device *SAP = SAP_device_init(300, 30, angBase, angGiunto, pippo, 200);
 
+    cout << " angolo giunto: " << angGiunto << " angolo base: " << angBase << endl;
+
+    SAP_stampaDatiDevice(SAP);
     /*  guida_to_SVG(guida,"./guidaSVG", false); */
     string SVG = "";
     SVG += "<svg width=\"" + to_string(1000) + "\" height=\"" + to_string(1000) + "\" xmlns=\"http://www.w3.org/2000/svg\">\n";
@@ -37,31 +47,13 @@ meccPrendiCarta *mecPC(double diml, double dimh,
     meccPrendiCarta << SVG;
     meccPrendiCarta.close();
 
-    /* meccPrendiCarta *MPC = new meccPrendiCarta;
+   
+}
 
-    asta *braccioGiunto = SAP_asta_init(diml, dimh);
-    asta *braccioBase = SAP_asta_init(diml, dimh);
-
-    if (braccioBase == NULL || braccioGiunto == NULL)
-    {
-        return NULL;
-    }
-
-    MPC->dispositivo->angoloBase = angBaseIni;
-    MPC->dispositivo->angoloGiunto = angGiuntoIni;
-    MPC->dispositivo->astaBase = *braccioBase;
-    MPC->dispositivo->astaGiunto = *braccioGiunto;
-    MPC->dispositivo->astaBase.posizioneX = posx;
-    MPC->dispositivo->astaBase.posizioneY = posy;
-
-    MPC->guidaP->pos_x = posx;
-    MPC->guidaP->pos_y = posy;
-    MPC->guidaP->lunghezza = lungh;
-    MPC->guidaP->corsa = corsa;
-    MPC->guidaP->incastri = grect_init(dimh, dimh);
-    MPC->guidaP->guida = grect_init(dimh, dimh);
-    MPC->guidaP->spessore = dimh / 3;
-    MPC->guidaP->alpha = 0; */
+double MPC_calcoloAngoli(double lunghezza, double corsa)
+{
+    double angBase = acos(corsa / (2 * lunghezza)) * (M_PI / 180);
+    double angGiunto = 180 - 2 * angBase;
 }
 
 meccPrendiCarta *datiMecPC()
@@ -80,14 +72,14 @@ meccPrendiCarta *datiMecPC()
 
     GuidaPrismatica *guida;
     guida = new GuidaPrismatica;
-    
-    do
+
+    /*  do
     {
         cout << "Inserisci posizione X iniziale dispositivo:" << endl;
         cin >> posx;
         cout << "Inserisci posizione Y iniziale dispositivo:" << endl;
         cin >> posy;
-    } while (!SAP_controlloPosizioneDevice(posx, posy, canvasW, canvasH));
+    } while (!SAP_controlloPosizioneDevice(posx, posy, canvasW, canvasH)); */
 
     do
     {
@@ -96,7 +88,6 @@ meccPrendiCarta *datiMecPC()
         cout << "Inserire altezza bracci:" << endl;
         cin >> altezza;
     } while (!SAP_controlloAste(lunghezza, altezza));
-
 
     do
     {
@@ -123,7 +114,7 @@ meccPrendiCarta *datiMecPC()
         cin >> dimx >> dimy;
     } while (!guida_controlla_integrita(guida));
 
-    meccPrendiCarta *creaMecPc = mecPC(lunghezza, altezza, posx, posy,l, c);
+    meccPrendiCarta *creaMecPc = mecPC(lunghezza, altezza, posx, posy, l, c);
 
     /* meccPrendiCarta *creaMecPc = SAP_inserisciDatiMenu();       //perché non va bene??? */
     return creaMecPc;
@@ -172,6 +163,8 @@ bool MPC_limitiAngoli(float angBase, float angGiunto)
     }
     return true;
 }
+
+
 
 /* creare la machine che quando la posizione della guida si trova dal 95% (o 100% meglio???) della corsa, SAP inizia a ruotare per andare in posizone
 e dopo inizia a trascinare un foglio */
