@@ -13,47 +13,63 @@ using namespace std;
 double canvasW = 1000;
 double canvasH = 800;
 
-meccPrendiCarta *mecPC(double diml, double dimh,
-                       float posx, float posy, float lungh, float corsa)
+void menu (int n) {
+
+    cout <<"Quante macchine vuoi creare?" << endl;
+    cin >> n;
+
+
+}
+
+
+void MPC_calcoloAngoli(device * SAP, GuidaPrismatica * guida)
 {
-    /*     double pluto =  -guida->lunghezza/2 + guida->corsa - guida->guida->dim_x/2;
- */
+    double base = guida->lunghezza - guida->corsa;
+    
+    double angBase =  (180/M_PI)*acos(base / (2 * (SAP->astaBase.lunghezza - SAP->astaBase.altezza)));
 
-    GuidaPrismatica *guida = guida_init(500, 500, 300, 0, 30, 50);
-
-    double pippo = canvasW / 2 - 300 / 2 - guida->guida->dim_x/2 + guida->corsa;
-    double angBase = acos((M_PI/2)-((guida->lunghezza - guida->corsa ) / (285*2)));
     double angGiunto = 180 - 2 * angBase;
-    cout << " prova " << (guida->lunghezza-guida->corsa)/600<< endl;
-    /* SAP_disegnaDevice (SAP); */
+    SAP_setAngolo(SAP, angBase,180 - angGiunto);
 
-    device *SAP = SAP_device_init(300, 30, angBase, angGiunto, pippo, 200);
+}
 
-    cout << " angolo giunto: " << angGiunto << " angolo base: " << angBase << endl;
+meccPrendiCarta *mecPC(double diml, double dimh,float posx, float posy, float lungh, float corsa)
+                       
+{
+    meccPrendiCarta * p = new meccPrendiCarta;
 
-    SAP_stampaDatiDevice(SAP);
-    /*  guida_to_SVG(guida,"./guidaSVG", false); */
+    GuidaPrismatica *guida = guida_init(500, 500, 200, 0, 30, 50);
+    double ptoIniX = canvasW / 2 - guida->lunghezza / 2 - guida->guida->dim_x / 2 + guida->corsa;
+
+    device *SAP = SAP_device_init(300, 30, 0, 0, ptoIniX, 215);
+   
+    MPC_calcoloAngoli(SAP,guida);
+
+    p->dispositivo = SAP;
+    p->guidaP = guida;
+
+    return p;
+    
+    
+}
+
+
+void MecPC_salvaSVG (meccPrendiCarta * mecPC, string nomeFile) {
+
     string SVG = "";
     SVG += "<svg width=\"" + to_string(1000) + "\" height=\"" + to_string(1000) + "\" xmlns=\"http://www.w3.org/2000/svg\">\n";
     SVG += "<g>\n<title>Meccanismo prendi carta</title>\n";
 
-    SVG += SAP_disegnaDaStringa(SAP);
+    SVG += SAP_disegnaDaStringa(mecPC->dispositivo);
 
-    SVG += guida_to_SVGstring(guida);
+    SVG += guida_to_SVGstring(mecPC->guidaP);
 
     SVG += "</g>\n</svg>\n";
-    ofstream meccPrendiCarta("meccPrendiCarta.svg");
+    ofstream meccPrendiCarta(nomeFile + ".svg");
 
     meccPrendiCarta << SVG;
     meccPrendiCarta.close();
 
-   
-}
-
-double MPC_calcoloAngoli(double lunghezza, double corsa)
-{
-    double angBase = acos(corsa / (2 * lunghezza)) * (M_PI / 180);
-    double angGiunto = 180 - 2 * angBase;
 }
 
 meccPrendiCarta *datiMecPC()
@@ -73,13 +89,7 @@ meccPrendiCarta *datiMecPC()
     GuidaPrismatica *guida;
     guida = new GuidaPrismatica;
 
-    /*  do
-    {
-        cout << "Inserisci posizione X iniziale dispositivo:" << endl;
-        cin >> posx;
-        cout << "Inserisci posizione Y iniziale dispositivo:" << endl;
-        cin >> posy;
-    } while (!SAP_controlloPosizioneDevice(posx, posy, canvasW, canvasH)); */
+
 
     do
     {
@@ -119,52 +129,3 @@ meccPrendiCarta *datiMecPC()
     /* meccPrendiCarta *creaMecPc = SAP_inserisciDatiMenu();       //perché non va bene??? */
     return creaMecPc;
 }
-
-// funzione che determina la posizione della guida in percentuale alla sua corsa
-float liv_determinacorsa(GuidaPrismatica *guida, float perc)
-{
-    float res;
-    float corsa_utile = guida->lunghezza - guida->incastri->dim_x - guida->guida->dim_x / 2;
-    res = guida->incastri->dim_x / 2 + perc * corsa_utile / 100;
-    return res;
-}
-
-// funzione che, presa la posizione della guida, muove il SAP in posizione attiva
-bool MPC_posRotazione(float corsa, device *dispositivo)
-{
-    GuidaPrismatica *guida;
-    float percCorsa = liv_determinacorsa(guida, corsa);
-
-    // non sono convinto sia corretta la scrittura
-    if (percCorsa >= 95)
-    {
-        dispositivo->angoloBase = 45;
-        dispositivo->angoloGiunto = 90;
-        return true;
-    }
-    else
-    {
-        dispositivo->angoloBase = angBaseIni;
-        dispositivo->angoloGiunto = angGiuntoIni;
-    }
-}
-
-// funzione che limita l'esistenza degli angoli
-// MI SERVE?????
-bool MPC_limitiAngoli(float angBase, float angGiunto)
-{
-    if (angBase < 45 || angBase > 90)
-    {
-        return false;
-    }
-    if (angGiunto < 0 || angGiunto > 90)
-    {
-        return false;
-    }
-    return true;
-}
-
-
-
-/* creare la machine che quando la posizione della guida si trova dal 95% (o 100% meglio???) della corsa, SAP inizia a ruotare per andare in posizone
-e dopo inizia a trascinare un foglio */

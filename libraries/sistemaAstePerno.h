@@ -33,7 +33,7 @@ bool SAP_controlloAste(double, double);
 
 bool SAP_controlloAngoli(float, float);
 
-void SAP_motoAngolo(float, float, device *);
+void SAP_setAngolo(device *, float, float);
 
 void SAP_salvaSVG(string SVG);
 

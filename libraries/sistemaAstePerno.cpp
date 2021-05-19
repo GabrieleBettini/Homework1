@@ -25,17 +25,14 @@ void SAP_stampaDatiDevice(device *dispositivo)
 
 //modifica angoli aste
 //funzione non utilizzata nel mio device
-void SAP_motoAngolo(float angBase, float angGiunto, device *puntatoreDispositivo)
+void SAP_setAngolo(device *puntatoreDispositivo, float angBase, float angGiunto)
 {
-    float sommaAngBase = angBase + puntatoreDispositivo->angoloBase;
 
-    float sommaAngGiunto = angGiunto + puntatoreDispositivo->angoloGiunto;
-
-    if (SAP_controlloAngoli(sommaAngBase, sommaAngGiunto))
+    if (SAP_controlloAngoli(angBase, angGiunto))
     {
 
-        puntatoreDispositivo->angoloBase = sommaAngBase;
-        puntatoreDispositivo->angoloGiunto = sommaAngGiunto;
+        puntatoreDispositivo->angoloBase = angBase;
+        puntatoreDispositivo->angoloGiunto = angGiunto;
     }
 }
 
