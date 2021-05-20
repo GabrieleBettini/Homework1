@@ -33,21 +33,28 @@ void MPC_calcoloAngoli(device * SAP, GuidaPrismatica * guida)
 
 }
 
-meccPrendiCarta *mecPC(double diml, double dimh,float posx, float posy, float lungh, float corsa)
+meccPrendiCarta *mecPC(float posx, float posy,float lungh, float corsa,double dimh, double diml )
                        
 {
     meccPrendiCarta * p = new meccPrendiCarta;
 
-    GuidaPrismatica *guida = guida_init(500, 500, 200, 0, 30, 50);
+    GuidaPrismatica *guida = guida_init(posx, posy, lungh, corsa, dimh, dimh);
     double ptoIniX = canvasW / 2 - guida->lunghezza / 2 - guida->guida->dim_x / 2 + guida->corsa;
 
-    device *SAP = SAP_device_init(300, 30, 0, 0, ptoIniX, 215);
+    device *SAP = SAP_device_init(diml, dimh, 0, 0, ptoIniX, posy);
    
     MPC_calcoloAngoli(SAP,guida);
 
     p->dispositivo = SAP;
     p->guidaP = guida;
 
+    cout << "posX: " << posx << endl;
+    cout << "posY: " << posy << endl;
+    cout << "lungh: " << lungh << endl;
+    cout << "corsa: " << corsa << endl;
+    cout << "dimh: " << dimh << endl;
+    cout << "diml: " << diml << endl;
+    cout << "ptoIniX: " << ptoIniX << endl;
     return p;
     
     
@@ -76,15 +83,8 @@ meccPrendiCarta *datiMecPC()
 {
 
     double lunghezza;
-    double altezza;
 
-    float angoloBase_rot;
-    float angoloGiunto_rot;
-
-    /* double posizioneIniX;
-    double posizioneIniY;
- */
-    float posx, posy, l, c, dimx, dimy;
+    float posx, posy, lunghezzaG, corsa, dimx, dimy;
 
     GuidaPrismatica *guida;
     guida = new GuidaPrismatica;
@@ -95,9 +95,7 @@ meccPrendiCarta *datiMecPC()
     {
         cout << "Inserire lunghezza bracci:" << endl;
         cin >> lunghezza;
-        cout << "Inserire altezza bracci:" << endl;
-        cin >> altezza;
-    } while (!SAP_controlloAste(lunghezza, altezza));
+    } while (!SAP_controlloAste(lunghezza, dimx));
 
     do
     {
@@ -109,13 +107,13 @@ meccPrendiCarta *datiMecPC()
     {
 
         cout << "Specificare la lunghezza della guida prismatica: ";
-        cin >> l;
+        cin >> lunghezzaG;
     } while (!guida_controlla_integrita(guida));
     do
     {
 
         cout << "Spceficiare il valore della corsa della guida prismatica: ";
-        cin >> c;
+        cin >> corsa;
     } while (!guida_controlla_integrita(guida));
     do
     {
@@ -124,8 +122,7 @@ meccPrendiCarta *datiMecPC()
         cin >> dimx >> dimy;
     } while (!guida_controlla_integrita(guida));
 
-    meccPrendiCarta *creaMecPc = mecPC(lunghezza, altezza, posx, posy, l, c);
+    meccPrendiCarta *creaMecPc = mecPC(posx, posy, lunghezzaG , corsa, dimx, lunghezza );
 
-    /* meccPrendiCarta *creaMecPc = SAP_inserisciDatiMenu();       //perché non va bene??? */
     return creaMecPc;
 }
