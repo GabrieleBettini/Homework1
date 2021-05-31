@@ -10,9 +10,9 @@ struct meccPrendiCarta
 };
 void MPC_calcoloAngoli(device *, GuidaPrismatica *);
 
-meccPrendiCarta *mecPC(double, double,float, float, float, float);
+meccPrendiCarta *mecPC(double, double,float, float, double, double);
                        
 
-meccPrendiCarta *datiMecPC();
+void datiMecPC();
 
-void MecPC_salvaSVG (meccPrendiCarta *, string);
+void MecPC_salvaSVG (meccPrendiCarta **, int, string);

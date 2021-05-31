@@ -3,6 +3,9 @@
 
 using namespace std;
 
+extern double canvasWidth;
+extern double canvasHeight;  
+
 struct asta
 {
     double lunghezza;
